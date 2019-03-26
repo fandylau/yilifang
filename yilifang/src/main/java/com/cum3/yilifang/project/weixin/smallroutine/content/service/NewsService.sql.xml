@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.NewsService">
+    <!-- 新闻列表 -->
+    <sql id="newsList">
+      <![CDATA[ 
+            SELECT n.recNo,
+			 n.title,
+			 n.content,
+			 n.picUrls,
+			 n.hitNum,
+			 n.likeNum,
+			 DATE_FORMAT(n.createTime,'%Y.%m.%d %H:%i')  createTime,
+			 (SELECT count(1) FROM ylf_content_praise p where p.openId ='{}'  and p.bizId = n.recNo) hasPraise
+			from  ylf_content_news n order by n.createTime desc
+  	   ]]> 
+ 	</sql>
+</sql-statement>

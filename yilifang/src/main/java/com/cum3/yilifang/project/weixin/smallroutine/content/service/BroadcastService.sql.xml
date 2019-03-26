@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.BroadcastService">
+    <!--广播列表-->
+    <sql id="queryList">
+      <![CDATA[ 
+           select tb2.* from 
+			  (select MAX(createtime) createTime,openId FROM ylf_community_broadcast GROUP BY openId) tb1
+			JOIN
+			  (select  t1.*,t2.staffName,t2.portrait,t2.seq from  ylf_community_broadcast t1  left join ylf_community_staff t2 on t1.openId = t2.userId) tb2
+			ON tb1.openId = tb2.openId and tb1.createtime = tb2.createtime
+			ORDER BY tb2.seq asc 
+  	   ]]> 
+ 	</sql>
+ 	<sql id="queryListByOpenId">
+      <![CDATA[ 
+          select  t1.*,t2.staffName,t2.portrait,t2.seq from  ylf_community_broadcast t1  left join ylf_community_staff t2 on t1.openId = t2.userId where 1=1  
+  	   ]]> 
+ 	</sql>
+ 	
+
+
+</sql-statement>

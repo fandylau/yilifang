@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.NoticeService">
+    <!-- 通知公告列表 -->
+    <sql id="queryList">
+      <![CDATA[ 
+          select * from ylf_content_notice where 1=1 
+  	   ]]> 
+ 	</sql>
+ 	
+ 	<!-- 返回一定数量的公告列表 -->
+    <sql id="queryLimitList">
+      <![CDATA[ 
+          select t.*,
+          DATE_FORMAT(t.createtime,'%m-%d')  publishTime
+          from ylf_content_notice t
+          order by t.createtime desc limit {}
+  	   ]]> 
+ 	</sql>
+ 	
+</sql-statement>

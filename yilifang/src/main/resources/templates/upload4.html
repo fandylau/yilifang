@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人脸检测</title>
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/extends/jquery.jdirk.js"></script>
+    <link href="/js/webuploader/webuploader.css" rel="stylesheet" type="text/css" />
+    <script src="/js/webuploader/webuploader.min.js"></script>
+</head>
+<body>
+<form name="form1" id="form1"> 
+        <p>上传信号<input type='text' name='signal' id='signal' readonly="readonly"/> </p>  
+        <p>主键值:<input type="text" name="id" id = 'pk' readonly="readonly"/></p>  
+        <p>表单值:<input type="text" name="filed1" /></p>  
+        <p>附件存放在bean中的字段:<input type="text" name="attField" value='filed2' readonly="readonly"/></p>  
+        <p>文件:<input type="file" name="file" id="file"></p>  
+        <p><input type="button" name="b1" value="submit" onclick="fsubmit()" /></p>  
+</form>  
+<div id="result"></div>
+
+
+
+<script type="text/javascript">
+var i = 2;
+function fsubmit() {
+        if(i==0){
+           return;
+        }
+        var fd =new FormData(document.getElementById("form1"));
+        $.ajax({
+             url: "/yilifang/TTest/tTestService/saveByMutipart",
+             type: "POST",
+             data: fd,
+             processData: false,  // 告诉jQuery不要去处理发送的数据
+             contentType: false,   // 告诉jQuery不要去设置Content-Type请求头
+             success: function(data){
+                i--;
+                if(i==1){
+                   $('#signal').val('upload');
+                }
+                console.log(data.Retdata.pkColumn);
+                console.log(data.Retdata.pkValue);
+                $('#pk').val(data.Retdata.pkValue);
+                fsubmit();
+             }
+        });
+        return false;
+    }
+
+
+
+</script>
+
+
+</body>
+</html>

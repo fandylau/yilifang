@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>我的业务逻辑</title>
+<script src="/js/jquery/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+	<div>
+		<p><h1>我的</h1></p>
+		<div>
+			<p>首页用户动态列表</p>
+			<p>参数：openId</p>
+			<p>服务地址：http://localhost/yilifang/Dynamics/dynamicsService/dynamicsOfIndex</p>
+			<textarea rows="10" cols="180" readonly="readonly">
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/Dynamics/dynamicsService/dynamicsOfIndex',
+			       cache:false, 
+			       async:false, 
+	               data:{openId:'1'},
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+                </textarea>
+			<br>
+			<button onclick="run1();">运行一下</button>
+			<script type="text/javascript">
+				function run1() {
+					$.ajax({
+						type : 'post',
+						url : '/yilifang/Dynamics/dynamicsService/dynamicsOfIndex',
+						cache : false,
+						async : false,
+						data : {
+							openId : 1
+						},
+						dataType : 'json',
+						success : function(data) {
+							alert(JSON.stringify(data))
+						}
+					});
+				}
+			</script>
+		</div>
+		
+		<div>
+			<p>首页新增或取消收藏动态</p>
+			
+			<p>参数：如下 具体参考例子</p>
+			<p>传递对象：{openId:'1',fvtType:'1',fvtId:'1'} 依次表示：openId，文章类型：fvtType 1动态 2新闻 3热点4作品秀     fvtId：动态或新闻的id</p>
+		    <p>传递操作：{addOrCancel:"Add"}  addOrCancel："Add"新增收藏 |"Cancel"取消收藏 </p>
+			<p>服务地址：http://localhost/yilifang/Favourate/favourateService/addOrCancelMyFavourate</p>
+			<textarea rows="10" cols="180" readonly="readonly">
+                var favourate = {openId:'1',fvtType:'1',fvtId:'1'}
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/Favourate/favourateService/addOrCancelMyFavourate',
+			       cache:false, 
+			       async:false, 
+	               data:{addOrCancel:'Add',jsonData:JSON.stringify({passdata:favourate})},
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+                </textarea>
+			<br>
+			<button onclick="run2();">运行一下</button>
+			<script type="text/javascript">
+				function run2() {
+					var favourate = {openId:'1',fvtType:'1',fvtId:'1'};
+	                $.ajax({ 
+				       type: 'post', 
+				       url: '/yilifang/Favourate/favourateService/addOrCancelMyFavourate',
+				       cache:false, 
+				       async:false, 
+		               data:{addOrCancel:'Add',jsonData:JSON.stringify({passdata:favourate})},
+				       dataType: 'json', 
+				       success: function(data){ 
+				    	   alert(JSON.stringify(data))
+				       } 
+			        });
+				}
+			</script>
+		</div>
+		
+		<div>
+			<p>查看首页动态详情</p>
+			<p>参数：如下 具体参考例子</p>
+			<p>传递参数：{dynamicId:'1'} 表示：动态ID</p>
+			<p>服务地址：http://localhost/yilifang/Dynamics/dynamicsService/dynamicsDetail</p>
+			<textarea rows="10" cols="180" readonly="readonly">
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/Dynamics/dynamicsService/dynamicsDetail',
+			       cache:false, 
+			       async:false, 
+	               data:{dynamicId:'1'},
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+                </textarea>
+			<br>
+			<button onclick="run3();">运行一下</button>
+			<script type="text/javascript">
+				function run3() {
+	                 $.ajax({ 
+				       type: 'post', 
+				       url: '/yilifang/Dynamics/dynamicsService/dynamicsDetail',
+				       cache:false, 
+				       async:false, 
+		               data:{dynamicId:'1'},
+				       dataType: 'json', 
+				       success: function(data){ 
+				    	   alert(JSON.stringify(data))
+				       } 
+			        });
+				}
+			</script>
+		</div>
+		
+		<div>
+			<p>评论点赞：点赞和取消赞自动切换</p>
+			<p>参数：如下 具体参考例子</p>
+			<p>传递参数：{type:'1',bizId:'1',openId:'2'} 依次表示：类型针对评论   评论或文章的id  openId   </p>
+			<p>服务地址：http://localhost/yilifang/Praise/praiseService/pushPraise</p>
+			<textarea rows="10" cols="180" readonly="readonly">
+                var praise ={type:'1',bizId:'1',openId:'2'};
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/Praise/praiseService/pushPraise',
+			       cache:false, 
+			       async:false, 
+	               data:{jsonData:JSON.stringify({passdata:praise})},
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+                </textarea>
+			<br>
+			<button onclick="run4();">运行一下</button>
+			<script type="text/javascript">
+				function run4() {
+	                    var praise ={type:'1',bizId:'1',openId:'3'};
+		                $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/Praise/praiseService/pushPraise',
+					       cache:false, 
+					       async:false, 
+			               data:{jsonData:JSON.stringify({passdata:praise})},
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data))
+					       } 
+				        });
+				}
+			</script>
+		</div>
+		
+		<div>
+			<p>添加评论</p>
+			<p>参数：如下 具体参考例子</p>
+			<p>传递参数：{userOpenId:'4',type:1,bizId:'1',content:'艾欧不错喔！'}  </p>
+			<p>服务地址：http://localhost/yilifang/MineComments/mineCommentsService/save</p>
+			<textarea rows="10" cols="180" readonly="readonly">
+                var comment ={userOpenId:'4',type:1,bizId:'1',content:'艾欧不错喔！'};
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/MineComments/mineCommentsService/save',
+			       cache:false, 
+			       async:false, 
+	               data:{jsonData:JSON.stringify({passdata:comment})},
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+                </textarea>
+			<br>
+			<button onclick="run5();">运行一下</button>
+			<script type="text/javascript">
+				function run5() {
+	                    var comment ={userOpenId:'4',type:1,bizId:'1',content:'艾欧不错喔！'};
+		                $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/MineComments/mineCommentsService/save',
+					       cache:false, 
+					       async:false, 
+			               data:{jsonData:JSON.stringify({passdata:comment})},
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data))
+					       } 
+				        });
+				}
+			</script>
+		</div>
+		
+		<div>
+			<p>测试</p>
+			<button onclick="run6();">运行一下</button>
+			<script type="text/javascript">
+				function run6() {
+	                 
+		                $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/Broadcast/broadcastService/save',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               //data:JSON.stringify( {comcode:'12345',passdata:{sqlId:'queryList'}}  ),
+			               data:JSON.stringify( {comcode:'com11111',passdata:{entity:{userName:'张兴益',openId:'o11111',seconds:30},oVoices:[{attId:'111',url:'222',status:0}]}} ),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data))
+					       } 
+				        });
+				}
+			</script>
+		</div>
+		
+	</div>
+</body>
+</html>

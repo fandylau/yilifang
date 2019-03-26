@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.trade.service.ProductService">
+    <!--demo -->
+    <sql id="queryList">
+      <![CDATA[ 
+          select * from yilifang_comunity_product
+  	   ]]> 
+ 	</sql>
+</sql-statement>

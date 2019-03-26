@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cum3.yilifang.project.system.operlog.mapper.OperLogMapper">
+  <resultMap id="BaseResultMap" type="com.cum3.yilifang.project.system.operlog.domain.OperLog">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="businessType" jdbcType="INTEGER" property="businessType" />
+    <result column="operatorType" jdbcType="INTEGER" property="operatorType" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="channel" jdbcType="VARCHAR" property="channel" />
+    <result column="loginName" jdbcType="VARCHAR" property="loginName" />
+    <result column="deptName" jdbcType="VARCHAR" property="deptName" />
+    <result column="operUrl" jdbcType="VARCHAR" property="operUrl" />
+    <result column="operIp" jdbcType="VARCHAR" property="operIp" />
+    <result column="operLocation" jdbcType="VARCHAR" property="operLocation" />
+    <result column="operParam" jdbcType="VARCHAR" property="operParam" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="errorMsg" jdbcType="VARCHAR" property="errorMsg" />
+    <result column="operTime" jdbcType="TIMESTAMP" property="operTime" />
+    <result column="createBy" jdbcType="VARCHAR" property="createBy" />
+    <result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="updateBy" jdbcType="VARCHAR" property="updateBy" />
+    <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+</mapper>

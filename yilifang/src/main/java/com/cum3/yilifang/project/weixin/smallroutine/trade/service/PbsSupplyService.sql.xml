@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.trade.service.PbsSupplyService">
+    <!--demo -->
+    <sql id="queryList">
+      <![CDATA[ 
+          select * from yilifang_comunity_pbssupply where 1=1 and effecEndTime>=NOW() 
+  	   ]]> 
+ 	</sql>
+</sql-statement>

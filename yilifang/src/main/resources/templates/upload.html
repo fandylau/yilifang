@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分片上传</title>
+    <script src="/js/jquery/jquery.min.js"></script>
+    <script src="/js/extends/jquery.jdirk.js"></script>
+    <script src="/js/ylf.parser.js"></script>
+    <link href="/js/viewer/viewer.min.css" rel="stylesheet" type="text/css" />
+    <script src="/js/viewer/viewer-jquery.min.js"></script>
+    <link href="/js/webuploader/webuploader.css" rel="stylesheet" type="text/css" />
+    <script src="/js/webuploader/webuploader.min.js"></script>
+    <link href="/js/extends/poweruploader/ylf.poweruploader.css" rel="stylesheet" type="text/css" />
+    <script src="/js/extends/poweruploader/ylf.poweruploader.js"></script>
+ 
+   
+</head>
+<body>
+
+
+
+<div id="uploader"  class='ylf-poweruploader' style='margin-left:15px;margin-top:15px;border:1px solid #B2C6DE;' 
+    data-options ="
+      fileNumLimit:25,
+      name:'model.name',
+      isView:false,
+      width:$(this).width()*0.66,
+      height:200,
+      value:''
+    "
+ ></div>
+
+
+
+</body>
+</html>

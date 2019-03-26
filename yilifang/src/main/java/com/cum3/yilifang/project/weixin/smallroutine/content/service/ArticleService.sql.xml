@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.ArticleService">
+    <!-- 新闻列表 -->
+    <sql id="articleList">
+      <![CDATA[ 
+             SELECT  d.recNo,
+			 d.title,
+			 d.titlePic,
+			 d.publishBy,
+			 d.hitNum,
+			 DATE_FORMAT(d.createtime,'%Y.%m.%d %H:%i')  publishTime,
+			 (SELECT count(1) FROM ylf_mine_favourate fav where fav.openId ='${openId}'  and fav.fvtId = d.recNo ) isMyfvt,
+			 (SELECT count(1) FROM ylf_mine_praise p where  p.bizId =  d.recNo ) likeNum
+			from  ylf_content_article d left join  
+			ylf_content_floder t2 ON t2.recNo = d.topicId where 1=1 
+  	   ]]> 
+ 	</sql>
+ 	
+</sql-statement>

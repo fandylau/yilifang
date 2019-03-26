@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.mine.service.FaceAuthenticationService">
+    <!--列表 -->
+    <sql id="queryList">
+      <![CDATA[ 
+          select * from dual
+  	   ]]> 
+ 	</sql>
+</sql-statement>

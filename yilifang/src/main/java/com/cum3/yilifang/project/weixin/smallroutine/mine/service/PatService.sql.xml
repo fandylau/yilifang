@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.mine.service.PatService">
+    <!--随手拍列表 -->
+    <sql id="queryList">
+      <![CDATA[ 
+            SELECT n.recNo,
+			 n.title,
+			 n.content,
+			 n.picUrls,
+			 n.videoUrls,
+			 n.userName,
+			 n.openId,
+			 n.createTime,
+			 n.portrait,
+			 n.hitNum,
+			 n.likeNum,
+			 DATE_FORMAT(n.createTime,'%Y.%m.%d %H:%i')  creatTime,
+			 (SELECT count(1) FROM ylf_content_praise p where p.openId ='{}'  and p.bizId = n.recNo) hasPraise
+			from  ylf_mine_pat n order by n.createTime desc
+  	   ]]> 
+ 	</sql>
+ 	
+
+
+</sql-statement>

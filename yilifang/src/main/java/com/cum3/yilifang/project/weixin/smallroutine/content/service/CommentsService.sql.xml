@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.CommentsService">
+    <!--根据业务Id（新闻 热点） 查找评论列表-->
+    <sql id="queryPageCmListByBizId">
+      <![CDATA[ 
+          SELECT 
+             cm.*,u.wxPortrait,u.wxNickName,
+		    (SELECT count(1) FROM ylf_content_praise p where p.openId ='{}'  and p.bizId =cm.recNo) hasPraise
+		  from  ylf_content_comments cm 
+		  LEFT JOIN ylf_mine_user u on u.openId = cm.openId
+		  WHERE cm.bizId = '{}'
+		  ORDER BY cm.createtime desc 
+  	   ]]> 
+ 	</sql>
+</sql-statement>

@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+<meta charset="UTF-8">
+<title>后台使用Demo</title>
+<script th:src="@{/js/jquery/jquery.min.js}"></script>
+</head>
+<body>
+<p><h1>后台使用案例</h1></p>
+
+<div>
+   <p><h2>1.通用controller</h2></p>
+   <p>  直接以前端传递来的"<font color=red>/yilifang/modelName/Serivce名/方法名 </font>"去调用Service层的同名方法; Controller层不再需要写任何代码<br>
+       <font color = blue> 例子:</font>
+   <p>  比如前端访问:<font color=red> /yilifang/task/testService/queryAll</font><br>
+        Service层相应的方法名:  Object queryAll(Map<String, Object> parameterMap)<br>
+                    相应的Service在Spring容器中的id : testService<br>
+   </p>
+   <p> 
+                  按照此约定 可访问BaseService 中封装的方法 ，需要提供正确的参数。 具体使用看以下的测试用例<br>
+                  具体写法参考 后台 com.cum3.yilifang.project.test 模块的写法<br>
+       <font color = blue> 这里只是一个demo 实际开发的时候 配置下服务名称继承BaseService 可以不用写代码调用BaseService封装的通用方法，通过反射返回自己定义的model数据</font>
+   </p>
+   <div>
+       <h2>测试：</h2>
+       <p>1.queryById（主键查询）  服务地址：http://localhost/yilifang/TTest/tTestService/queryById?pkValue=044a5f4c56a5406ab2537f48bcd50cc3</p>
+       <p>pkValue：必须写  表示主键值</p>
+       
+       <p>2.queryAll（查询所有） 服务地址：http://localhost/yilifang/TTest/tTestService/queryAll</p>
+       <p>无需传递参数</p>
+       <p>3.queryListByWhere（按bean的条件查询） 服务地址：http://localhost/TTest/tTestService/queryListByWhere</p>
+       <p>提交方式：post  参数：比如passdata:{id:'044a5f4c56a5406ab2537f48bcd50cc3'} 表示找出id=044a5f4c56a5406ab2537f48bcd50cc3 的所有TTest对象。可以传递多个bean中的属性进行AND组合查询</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryListByWhere',
+			       cache:false, 
+			       contentType:"application/json;charset=utf-8",
+	               data:JSON.stringify({comCode:123243,passdata:{'QUERY_filed1_S_LK':'阿炳'}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run3();">运行一下</button>
+       <script type="text/javascript">
+           function run3(){
+               $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryListByWhere',
+			       cache:false, 
+			       contentType:"application/json;charset=utf-8",
+	               data:JSON.stringify({comCode:123243,passdata:{'QUERY_filed1_S_LK':'阿炳'}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+           }
+       </script>
+    </div>
+    
+    <div>
+       <p>4.queryPageListByWhere（按bean的条件分页查询查询） 服务地址：http://localhost/yilifang/TTest/tTestService/queryListByWhere</p>
+       <p>提交方式：post  参数：参考3 多传了page 和rows 取分页数据。可以传递多个bean中的属性进行AND组合查询</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryPageListByWhere',
+			       cache:false, 
+                   contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({comCode:123243,passdata:{entity:{},sortBy:'createTime',sortType:'asc',start:100,limit:100}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run4();">运行一下</button>
+       <script type="text/javascript">
+           function run4(){
+               $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryPageListByWhere',
+			       contentType: "application/json; charset=utf-8",
+			       cache:false, 
+	               data:JSON.stringify({comCode:123243,passdata:{entity:{},sortBy:'createTime',sortType:'asc',start:9,limit:3}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+           }
+       
+       </script>
+    <div>
+       <p>5.queryPageListBySqlFilter（分页多表查询 返回ListMap） 服务地址：http://localhost/TTest/tTestService/queryPageListBySqlFilter</p>
+       <p>参数 page,rows,sqlId：TTest模块的sqlxml文件中的sql语句id,QUERY_t1#filed1_S_LK(表示：t1.filed1 like ? ) 可以传递多个这种约定符号进行组合查询  拼接方法看下面的 说明</p>
+       <p>S:String L:Long I:Integer D:Date ST:Short BD:BigDecimal FT:Float</p>
+       <p>EQ 相等 | NE 不等于 | LT 小于 | GT 大于  | LE 小于等于 |GE 大于等于 | LK 模糊 | RLK 右模糊* | LLK 左模糊 | TLK树本级和下级 |TCLK 树下级</p>
+       <p>提交方式：post</p>
+       <p>代码：</p>
+       
+       <textarea rows="10" cols="180" readonly="readonly">
+          $.ajax({ 
+			       type: 'post', 
+			        url: '/yilifang/Ttest/tTestService/queryPageListBySqlFilter',
+			       contentType: "application/json; charset=utf-8",
+                   cache:false, 
+	               data:JSON.stringify({"comCode":"cus000001","openId":"oFKmP4oQmXh2PHFiu6m0NdlQjQo8","passdata":{"start":100,"limit":100,"sortBy":"t1.createTime"
+			         ,"sortType":"asc","sqlId":"queryList"}}),
+                   success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run5();">运行一下</button>
+       <script type="text/javascript">
+           function run5(){
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/Ttest/tTestService/queryPageListBySqlFilter',
+			       contentType: "application/json; charset=utf-8",
+                   dataType: "json", //指定服务器返回的数据类型
+                   cache:false, 
+	               data:JSON.stringify({"comCode":"cus000001","openId":"oFKmP4oQmXh2PHFiu6m0NdlQjQo8","passdata":{"start":100,"limit":100,"sortBy":"t1.createTime"
+	               ,"sortType":"asc","sqlId":"queryList"}}),
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+           }
+       
+       </script>
+    </div>
+    
+     <div>
+       <p>6.queryListBySqlFilter（多表查询 返回ListMap） 服务地址：http://localhost/yilifang/TTest/tTestService/queryListBySqlFilter</p>
+       <p>参数说明参看5  只是少传递了 page rows sortBy sortType 分页参数  执行直接返回list</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryListBySqlFilter',
+                   contentType: "application/json; charset=utf-8",
+			       cache:false, 
+	               data:JSON.stringify({passdata:{'QUERY_t1#filed1_S_LK':'2','QUERY_t1#filed2_S_LK':'2',sqlId:'queryList',sortBy:'t1.createTime',sortType:'desc'}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run6();">运行一下</button>
+       <script type="text/javascript">
+           function run6(){
+                $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryListBySqlFilter',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({passdata:{'QUERY_t1#filed1_S_LK':'2','QUERY_t1#filed2_S_LK':'2',sqlId:'queryList',sortBy:'t1.createTime',sortType:'desc'}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data))
+			       } 
+		        });
+           }
+       
+       </script>
+    </div>
+    
+    
+     <div>
+       <p>7.queryListBySqlTemplate（查询TTest模块的sqlxml文件中的sql语句 返回ListMap） 服务地址：http://localhost/yilifang/TTest/tTestService/queryListBySqlTemplate</p>
+       <p>参数说明:params：sql中查询值占位符的值  是个arraylist |sqlId: sqlxml中的  sqlId   具体调用参考demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/queryListBySqlTemplate',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({passdata:{params:[1,2],sqlId:'queryList2'}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data));
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run7();">运行一下</button>
+       <script type="text/javascript">
+           function run7(){
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/queryListBySqlTemplate',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({passdata:{params:[1,2],sqlId:'queryList2'}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+		        });
+           }
+       
+       </script>
+    </div>
+    
+     <div>
+       <p>8.save（保存一个bean对象） 服务地址：http://localhost/TTest/tTestService/save</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回保存的条数1  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          var test = {filed1:'我是刘欢',filed2:'叫我第一名'};
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/save',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data));
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run8();">运行一下</button>
+       <script type="text/javascript">
+           function run8(){
+		          var test = {filed1:'我是刘欢',filed2:'叫我第一名'};
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/save',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				    });
+           }
+       
+       </script>
+    </div>
+    
+    <div>
+       <p>9.saveOrUpdate（保存或更新一个bean对象） 服务地址：http://localhost/yilifang/TTest/tTestService/save</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回true失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          var test = {id:'c0a95fd83633470f93cdb5d08ccf7bc1',filed1:'我是阿炳',filed2:'叫我老司机'};//有id 会执行update语句
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/TTest/tTestService/saveOrUpdate',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data));
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run9();">运行一下</button>
+       <script type="text/javascript">
+           function run9(){
+		          var test = {id:'c0a95fd83633470f93cdb5d08ccf7bc1',filed1:'我是阿炳',filed2:'叫我老司机'};
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/saveOrUpdate',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				    });
+           }
+       
+       </script>
+    </div>
+    
+     <div>
+       <p>10.batchInsert（保存多个bean对象 批量插入） 服务地址：http://localhost/yilifang/TTest/tTestService/batchInsert</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回插入条数  失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          var test = {filed1:'我是阿炳1',filed2:'叫我老司机1'};
+          var test2 ={filed1:'我是阿炳2',filed2:'叫我老司机2'};
+          var test3= {filed1:'我是阿炳3',filed2:'叫我老司机3'};
+          var insertList = [];
+          insertList.push(test); insertList.push(test2);insertList.push(test3);
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/batchInsert',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:insertList}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data));
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run10();">运行一下</button>
+       <script type="text/javascript">
+           function run10(){
+		          var test = {filed1:'我是阿炳1',filed2:'叫我老司机1'};
+		          var test2 ={filed1:'我是阿炳2',filed2:'叫我老司机2'};
+		          var test3= {filed1:'我是阿炳3',filed2:'叫我老司机3'};
+		          var insertList = [];
+		          insertList.push(test); insertList.push(test2);insertList.push(test3);
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/batchInsert',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:insertList}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				  });
+           }
+       
+       </script>
+    </div>
+    
+    
+    <div>
+       <p>11.saveOrUpdateList（保存或更新多个bean对象 有id时更新否则插入） 服务地址：http://localhost/TTest/tTestService/saveOrUpdateList</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回true  失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+          var test = {id:'96e7f3d9cd2d446e919dbfea47ed5b78',filed1:'我是阿炳1',filed2:'叫我老司机1'};
+          var test2 ={filed1:'我是阿炳4',filed2:'叫我老司机4'};
+          var test3= {filed1:'我是阿炳5',filed2:'叫我老司机5'};
+          var insertOrUpdateList = [];
+          insertOrUpdateList.push(test); insertOrUpdateList.push(test2);insertOrUpdateList.push(test3);
+          $.ajax({ 
+			       type: 'post', 
+			       url: '/yilifang/TTest/tTestService/saveOrUpdateList',
+			       cache:false, 
+			       contentType: "application/json; charset=utf-8",
+	               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:insertOrUpdateList}}),
+			       dataType: 'json', 
+			       success: function(data){ 
+			    	   alert(JSON.stringify(data));
+			       } 
+		        });
+       </textarea><br>
+       <button onclick="run11();">运行一下</button>
+       <script type="text/javascript">
+           function run11(){
+		          var test = {id:'96e7f3d9cd2d446e919dbfea47ed5b78',filed1:'我是阿炳1',filed2:'叫我老司机1'};//这条会更新
+		          var test2 ={filed1:'我是阿炳4',filed2:'叫我老司机4'};
+		          var test3= {filed1:'我是阿炳5',filed2:'叫我老司机5'};
+		          var insertOrUpdateList = [];
+		          insertOrUpdateList.push(test); insertOrUpdateList.push(test2);insertOrUpdateList.push(test3);
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/saveOrUpdateList',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:insertOrUpdateList}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       
+       </script>
+    </div>
+    
+    
+     <div>
+       <p>12.saveSelective（保存一个个bean对象 插入不为空的字段 效率比较高） 服务地址：http://localhost/yilifang/TTest/tTestService/saveSelective</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回true  失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                 var test = {filed1:'我是刘欢666',filed2:'666666666'}; //注意看后台形成的sql 只会有两个字段被插入
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/saveSelective',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run12();">运行一下</button>
+       <script type="text/javascript">
+           function run12(){
+		          var test = {filed1:'我是刘欢666',filed2:'666666666'};
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang//TTest/tTestService/saveSelective',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       </script>
+    </div>
+    
+    
+    <div>
+       <p>13.update（更新一个bean  注意这是更新全部    原先有值的没设置会变成null） 服务地址：http://localhost/yilifang/TTest/tTestService/update</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回true  失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var test = {id:"c0a95fd83633470f93cdb5d08ccf7bc1",filed1:'我是刘欢666',filed2:'666666666'}; //更新id为c0a95fd83633470f93cdb5d08ccf7bc1的bean  注意这是更新全部    原先有值的没设置会变成null
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/update',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',comcode:12345,passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run13();">运行一下</button>
+       <script type="text/javascript">
+           function run13(){
+		          var test = {id:"c0a95fd83633470f93cdb5d08ccf7bc1",filed1:'我是刘欢666',filed2:'666666666'};
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/update',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       </script>
+    </div>
+    
+    
+    <div>
+       <p>14.updateSelective（更新一个bean 只更新设置的字段） 服务地址：http://localhost/yilifang/TTest/tTestService/updateSelective</p>
+       <p>参数：bean对象 比如例子中的TTest 成功返回true  失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var test = {id:"c0a95fd83633470f93cdb5d08ccf7bc1",filed1:'我是刘欢666',filed2:'666666666'}; //更新id为c0a95fd83633470f93cdb5d08ccf7bc1的bean 
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/updateSelective',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run14();">运行一下</button>
+       <script type="text/javascript">
+           function run14(){
+		          var test = {id:"c0a95fd83633470f93cdb5d08ccf7bc1",filed1:'我是刘欢666',filed2:'666666666'};//这里只会更新 filed1 filed2
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/updateSelective',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       </script>
+    </div>
+    
+    
+    </div>
+       <p>15.deleteByIds（更新一个bean 只更新设置的字段） 服务地址：http://localhost/TTest/tTestService/deleteByIds</p>
+       <p>参数：pkValues  id的值 多个用，拼接        失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var pkValues = ['7a249ef2d0da4fad9fa06a8763bc589a'];
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/deleteByIds',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{pkValues:pkValues}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run15();">运行一下</button>
+       <script type="text/javascript">
+           function run15(){
+		           var pkValues = ['7a249ef2d0da4fad9fa06a8763bc589a'];
+		           $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/deleteByIds',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{pkValues:pkValues}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				    });
+           }
+       </script>
+    </div>
+    
+    
+    <div>
+       <p>16.deleteByWhere（更新一个bean 只更新设置的字段） 服务地址：http://localhost/yilifang/TTest/tTestService/deleteByWhere</p>
+       <p>参数：pkValues  id的值 多个用，拼接        失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var test = {filed1:'我是刘欢666',filed2:'666666666'}; //filed1，filed2 条件同时满足 （相等）
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/deleteByWhere',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run16();">运行一下</button>
+       <script type="text/javascript">
+           function run16(){
+		           var test = {filed1:'我是刘欢666',filed2:'666666666'}; //filed1，filed2 条件同时满足 （相等）
+		           $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/deleteByWhere',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       </script>
+    </div>
+    <div>
+       <p>17.自己模块的业务  比如下面测试用例的myBiz 在你定义的service中写  服务地址：http://localhost/yilifang/TTest/tTestService/myBiz</p>
+       <p>参数：自行定义，失败抛出异常  具体调用参考下面的demeo</p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var test = {filed1:'我是刘欢666',filed2:'666666666'}; //filed1，filed2 条件同时满足 （相等）
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/myBiz',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:{comCode:123243,token:'1223345454',comcode:12345,passdata:test},
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+       </textarea><br>
+       <button onclick="run17();">运行一下</button>
+       <script type="text/javascript">
+           function run17(){
+		           var test = {filed1:'我是刘欢666',filed2:'666666666'}; //filed1，filed2 条件同时满足 （相等）
+		           $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/TTest/tTestService/myBiz',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:{comCode:123243,token:'1223345454',comcode:12345,passdata:test},
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				        });
+           }
+       </script>
+    </div>
+    
+    
+    
+    <div>
+      <p><h2>2.通用树型Controller</h2></p>
+      <p>树结构的操作都是千篇一律，不必每颗树都写个controller，这里封装了一个通用的树treeService 实现树节点增加、删除、修改、同部树 、异步树</p>
+	  <p>同步树：http://localhost/yilifang/SysMenu/sysMenuService/synTree</p>
+	  <p>异步树：http://localhost/yilifang/SysMenu/sysMenuService/asyTree,
+	          http://localhost/yilifang/SysMenu/sysMenuService/asyTree?pid=1
+	  </p>
+    </div>
+    
+    </div>
+       <p>2.1 save（树append的一条数据） 服务地址：http://localhost/yilifang/SysMenu/sysMenuService/save</p>
+       <p></p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+                  var test = {parentId:'2',name:'id=2的节点插入',seq:4}; //id=2的节点插入 排列序号=4
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/SysMenu/sysMenuService/save',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:123243,token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				  });
+       </textarea><br>
+       <button onclick="tree1();">运行一下</button>
+       <script type="text/javascript">
+           function tree1(){
+		           var test = {parentId:'7123012ecb584841abc508129c3467cd',name:'厨房调味',seq:10}; //id=2的节点插入 排列序号=4
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/ProductCtg/productCtgService/save',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({comCode:'cus000001',token:'1223345454',passdata:{entity:test}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				  });
+           }
+       </script>
+    </div>
+    
+    
+     </div>
+       <p>2.2 deleteById（树删除节点和子节点） 服务地址：http://localhost/yilifang/SysMenu/sysMenuService/deleteById</p>
+       <p></p>
+       <p>代码：</p>
+       <textarea rows="10" cols="180" readonly="readonly">
+		          $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/SysMenu/sysMenuService/deleteById',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({passdata:{pkValue:'10f226f51bb744e09305940bd31c5b2e'}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				  });
+       </textarea><br>
+       <button onclick="tree2();">运行一下</button>
+       <script type="text/javascript">
+           function tree2(){
+		            $.ajax({ 
+					       type: 'post', 
+					       url: '/yilifang/SysMenu/sysMenuService/deleteById',
+					       cache:false, 
+					       contentType: "application/json; charset=utf-8",
+			               data:JSON.stringify({passdata:{pkValue:'10f226f51bb744e09305940bd31c5b2e'}}),
+					       dataType: 'json', 
+					       success: function(data){ 
+					    	   alert(JSON.stringify(data));
+					       } 
+				  });
+           }
+       </script>
+    </div>
+    
+    
+    
+    <div>
+      <p><h2>3.用户操作日志</h2></p>
+      <p>操作日志标签可通过@Log 标签实现  使用参考如下</p>
+	    <p> @GetMapping("/list")</p>
+	    <p>@ResponseBody</p>
+	    <p>@Log(title = "操作日志测试", businessType = BusinessType.EXPORT,operatorType = OperatorType.MANAGE,isSaveRequestData= true)</p>
+	    <p>public AjaxResult list() {</p>
+	    <p>       TTest test = new TTest();</p>
+	    <p>       return success(tTestService.queryPageListByWhere(1, 10, test));</p>
+	    <p>}</p>
+      <p>标签内参数说明：title： 标题（用户自定义） BusinessType：操作名称 具体看后台代码BusinessType枚举类型   OperatorType：用户类型    具体看后台代码BusinessType枚举类型  </p>
+      <p>系统将拦截有Log标签的方法  将操作记录写入数据库</p>
+    </div>
+    
+   
+  
+  
+</div>
+    
+
+
+</body>
+</html>

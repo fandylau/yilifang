@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.content.service.CareApplyService">
+    <!-- demo -->
+    <sql id="myApplyList">
+      <![CDATA[ 
+         select t1.status applyStatus, t2.*
+          from yilifang_comunity_careapply t1 
+          join  yilifang_comunity_caregivers t2
+          on t1.carederId = t2.recNo
+          where 1=1 and t2.delFlag = 0
+  	   ]]> 
+ 	</sql>
+ 	 <sql id="applyList">
+      <![CDATA[ 
+         select 
+          t1.*,
+          t2.type,t2.sex,t2.name,t2.age,t2.careNative,t2.education,
+          t2.photoUrl,t2.workExperience,t2.speciality,t2.address,
+          t2.seftEval,t2.customerEval
+          from yilifang_comunity_careapply t1 
+          left join  yilifang_comunity_caregivers t2
+          on t1.carederId = t2.recNo
+          where 1=1 and t2.delFlag = 0
+  	   ]]> 
+ 	</sql>
+ 	
+ 	
+</sql-statement>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.mine.service.DynamicsService">
+    <!--小程序首页动态 列表 -->
+    <sql id="dynamicsOfIndex">
+      <![CDATA[ 
+           SELECT d.recno,
+			 d.title,
+			 d.titlePics,
+			 DATE_FORMAT(d.createtime,'%Y.%m.%d %H:%i')  createtime,
+			 u.wxPortrait,
+			 u.wxNickName ,
+			 (select GROUP_CONCAT(tags.tagId) tagIds from (select t1.tagname,t2.dynamicsId,t2.tagId FROM ylf_content_tag t1 left join  ylf_content_tag_contents t2 on  t1.recno = t2.tagId ) tags where tags.dynamicsId = d.recNo) tagIds,
+			 (select GROUP_CONCAT(tags.tagName) tagNames from (select t1.tagname,t2.dynamicsId,t2.tagId FROM ylf_content_tag t1 left join  ylf_content_tag_contents t2 on  t1.recno = t2.tagId ) tags where tags.dynamicsId = d.recNo) tagNames,
+			 (SELECT count(1) FROM ylf_mine_favourate fav where fav.openId = u.openId and  fav.fvttype = '1' and  fav.fvtId = d.recno and fav.openId = '{}' ) isMyfvt
+			from  ylf_mine_dynamics d 
+			left join ylf_mine_user u
+			on d.userId = u.recNo
+			order by d.createtime desc
+  	   ]]> 
+ 	</sql>
+ 	
+ 	<!--小程序查看动态详情-->
+    <sql id="dynamicsDetail">
+      <![CDATA[ 
+            SELECT d.recNo recNo,
+			 d.title,
+			 d.titlePics,
+			 d.content,
+			 d.picOrVidieo,
+			 DATE_FORMAT(d.createtime,'%Y.%m.%d %H:%i')  createtime,
+			 u.wxPortrait,
+			 u.wxNickName,
+			 (select GROUP_CONCAT(tags.tagId) tagIds from (select t1.tagname,t2.dynamicsId,t2.tagId FROM ylf_content_tag t1 left join  ylf_content_tag_contents t2 on  t1.recno = t2.tagId ) tags where tags.dynamicsId = d.recNo) tagIds,
+			 (select GROUP_CONCAT(tags.tagName) tagNames from (select t1.tagname,t2.dynamicsId,t2.tagId FROM ylf_content_tag t1 left join  ylf_content_tag_contents t2 on  t1.recno = t2.tagId ) tags where tags.dynamicsId = d.recNo) tagNames
+			from  ylf_mine_dynamics d 
+			left join ylf_mine_user u
+			on d.userId = u.recNo
+			where d.recno = '{}'
+  	   ]]> 
+ 	</sql>
+ 	<!--一条动态下的所有评论-->
+ 	<sql id="commentsOfDynamic">
+ 	    select
+			(CASE WHEN t.type = '1'  THEN  t.createtime1 WHEN t.type = '2' THEN t.createtime2 WHEN t.type = '3' THEN  t.createtime3 END) as createtime,
+			type,
+			likeNum,
+			replyNum,
+			dataId,
+			fromOpenId,
+			toOpenId,
+			fromuser,
+			toUser,
+			content
+			from (
+					(
+					  select 
+						cmts.createtime  as createtime1 ,
+						"" as createtime2, 
+						"" as createtime3,
+						1 type, 
+						(select count(1) from ylf_mine_praise p where p.type = 1 and p.bizId = cmts.recno and p.status ='1' ) likeNum,
+						(select count(1) FROM ylf_mine_comments_reply rep where cmts.recno = rep.commentId ) replyNum,
+						cmts.recno dataId,
+						u.wxPortrait,
+						cmts.userOpenId fromOpenId,
+						'' toOpenId, 
+						u.wxNickname fromuser,
+						'' touser,
+						cmts.content
+					  from  (select * from  ylf_mine_comments cm where cm.bizId = '{}' ORDER BY cm.createtime asc ) cmts 
+						join ylf_mine_user u on u.openId = cmts.userOpenId 
+					) 
+					UNION 
+					(  
+					  select
+						cmts.createtime createtime1, 
+						reply.createtime createtime2 , 
+						"" as createtime3,
+						2 type, 
+						"" likeNum,
+						"" replyNum,
+						reply.recno dataId,
+						"" wxPortrait,
+						reply.fromOpenId,
+						reply.toOpenId,
+						u1.wxnickname fromuser,
+						u2.wxNickName toUser,
+						reply.content
+						from   (select * from ylf_mine_comments_reply ORDER BY createtime asc ) reply 
+						left join (select * from  ylf_mine_comments cm where cm.bizId = '{}' ORDER BY cm.createtime asc) cmts 	on reply.commentId = cmts.recNo
+					  join ylf_mine_user u1 on u1.openId = reply.fromOpenId 
+						join ylf_mine_user u2 on u2.openId = reply.toOpenId 
+						where  reply.replytype = '1'  
+					)
+					UNION (
+					    select 
+							cmts.createtime createtime1,
+							t2.createtime createtime2, 
+							t1.createtime createtime3,
+							3 type,
+							"" likeNum,
+							"" replyNum,
+							t1.recno dataId,
+							"" wxPortrait,
+							t1.fromOpenId,
+							t1.toOpenId,
+						  u1.wxnickname fromuser,
+						  u2.wxNickName toUser,
+							t1.content
+							from (select  * from ylf_mine_comments_reply reply where  reply.replyType = 2)  t1 
+							JOIN ylf_mine_comments_reply t2 on t2.recno = t1.replyId 
+							join ylf_mine_user u1 on u1.openId = t1.fromOpenId 
+					  	join ylf_mine_user u2 on u2.openId = t1.toOpenId 
+							left join (select * from  ylf_mine_comments cm where cm.bizId = '{}' ORDER BY cm.createtime asc) cmts on cmts.recno = t2.commentId 
+					)
+	      ) as t 
+		  order by createtime1 asc, createtime2 asc,createtime3 asc;
+ 	</sql>
+ 	
+
+</sql-statement>

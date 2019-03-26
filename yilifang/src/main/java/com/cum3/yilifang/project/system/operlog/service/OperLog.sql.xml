@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.system.operlog.service">
+    <!--测试 查找所有 -->
+    <sql id="selectAll">
+      <![CDATA[ 
+            select * from t_test t where t.filed1 ={}
+  	   ]]> 
+ 	</sql>
+</sql-statement>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cum3.yilifang.project.system.menu.mapper.SysMenuMapper" >
+  <resultMap id="BaseResultMap" type="com.cum3.yilifang.project.system.menu.domain.SysMenu" >
+	    <!--
+	      WARNING - @mbg.generated
+	    -->
+	    <id column="id" property="id" jdbcType="VARCHAR" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	    <result column="parentId" property="parentId" jdbcType="VARCHAR" />
+	    <result column="url" property="url" jdbcType="VARCHAR" />
+	    <result column="menuType" property="menuType" jdbcType="CHAR" />
+	    <result column="visible" property="visible" jdbcType="INTEGER" />
+	    <result column="perms" property="perms" jdbcType="VARCHAR" />
+	    <result column="icon" property="icon" jdbcType="VARCHAR" />
+	    <result column="isn" property="isn" jdbcType="VARCHAR" />
+	    <result column="rank" property="rank" jdbcType="INTEGER" />
+	    <result column="isdir" property="isdir" jdbcType="CHAR" />
+	    <result column="isleaf" property="isleaf" jdbcType="CHAR" />
+	    <result column="seq" property="seq" jdbcType="INTEGER" />
+	    <result column="createBy" property="createBy" jdbcType="VARCHAR" />
+	    <result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+	    <result column="updateBy" property="updateBy" jdbcType="VARCHAR" />
+	    <result column="updateTime" property="updateTime" jdbcType="TIMESTAMP" />
+	    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

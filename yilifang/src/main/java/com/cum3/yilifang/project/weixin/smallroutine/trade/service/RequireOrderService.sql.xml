@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sql-statement namespace="com.cum3.yilifang.project.weixin.smallroutine.trade.service.RequireOrderService">
+    <!--demo -->
+    <sql id="queryList">
+      <![CDATA[ 
+          select * from yilifang_comunity_pbsrequire where 1=1 and effecEndTime>=NOW() 
+  	   ]]> 
+ 	</sql>
+ 	
+ 	<!--我的订单-->
+    <sql id="myOrder">
+      <![CDATA[ 
+          select * from 
+			(select  
+				t1.recNo,t1.orderSn,t1.orderPrice,t1.createTime,t1.orderStatus,t1.confirmTime, t1.cancelTime,t1.orderType,t1.receiverOpenId,t1.receiverName,t1.receiverProtrait,t1.receiverPhone,
+				t2.recNo bizId ,t2.shippingType,t2.title,t2.name,t2.amount,t2.unit,t2.description,t2.userName,t2.protrait,t2.contacts,t2.contactsPhone,t2.takingStatus,t2.finishStatus,t2.pictureUrls,t2.videoUrls
+				from  yilifang_require_order t1
+				join
+				yilifang_comunity_pbsrequire t2 on t1.reqId = t2.recNo and t1.ordertype = 1
+				UNION ALL
+				select 
+				t1.recNo,t1.orderSn,t1.orderPrice,t1.createTime,t1.orderStatus,t1.confirmTime, t1.cancelTime,t1.orderType,t1.receiverOpenId,t1.receiverName,t1.receiverProtrait,t1.receiverPhone,
+				t2.recNo bizId ,t2.shippingType,t2.title,t2.name,t2.amount,t2.unit,t2.description,t2.userName,t2.protrait,t2.contacts,t2.contactsPhone,t2.takingStatus,t2.finishStatus,t2.pictureUrls,t2.videoUrls
+				from  yilifang_require_order t1
+				join
+				yilifang_comunity_pbssupply t2 on t1.reqId = t2.recNo )  t
+			where 1=1 
+  	   ]]> 
+ 	</sql>
+ 	
+</sql-statement>
